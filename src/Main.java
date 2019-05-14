@@ -67,11 +67,39 @@ public class Main {
         }
     }
 
+    private static boolean checkInput(String inp){
+        boolean result = true;
+        int c1 = 0;
+        int c2 = 0;
+
+        // not numbers
+        try {
+            c1 = Integer.parseInt(inp.split("")[0]);
+            c2 = Integer.parseInt(inp.split("")[0]);
+
+        // out of range
+            if ((c1 < 1) || (c1 > 3) || (c2 < 1) || (c2 > 3)){
+                result = false;
+                System.out.println("Coordinates should be from 1 to 3!");
+            }
+        }
+        catch (NumberFormatException e) {
+            result = false;
+            System.out.println("You should enter numbers!");
+        }
+
+
+
+
+
+        return result;
+    }
+
     public static void main(String[] args) {
-        //System.out.println("Enter cells: ");
+        System.out.println("Enter cells: ");
         Scanner sc = new Scanner(System.in);
         String userInput = sc.nextLine().replace("\"", "");
-        String[] a = userInput.split("");
+        String[] gameField = userInput.split("");
 
 
         System.out.format(
@@ -79,18 +107,54 @@ public class Main {
                         "| %s %s %s |\n" +
                         "| %s %s %s |\n" +
                         "| %s %s %s |\n" +
-                        "---------\n", a);
+                        "---------\n", gameField);
         //checkWinner(a);
 
         System.out.println("Enter the coordinates: ");
-        int x = sc.nextInt();
-        int y = sc.nextInt();
+        String coordinates = sc.nextLine();
 
         // 1.3 2.3 3.3
         // 1.2 2.2 3.2
         // 1.1 2.1 3.1
 
+        if (checkInput(coordinates)){
+            switch (coordinates){
+                case "1 3":
+                    gameField[0] = "X";
+                    break;
+                case "2 3":
+                    gameField[1] = "X";
+                    break;
+                case "3 3":
+                    gameField[2] = "X";
+                    break;
+                case "1 2":
+                    gameField[3] = "X";
+                    break;
+                case "2 2":
+                    gameField[4] = "X";
+                    break;
+                case "3 2":
+                    gameField[5] = "X";
+                    break;
+                case "1 1":
+                    gameField[6] = "X";
+                    break;
+                case "2 1":
+                    gameField[7] = "X";
+                    break;
+                case "3 1":
+                    gameField[8] = "X";
+                    break;
+            }
 
+            System.out.format(
+                    "---------\n" +
+                            "| %s %s %s |\n" +
+                            "| %s %s %s |\n" +
+                            "| %s %s %s |\n" +
+                            "---------\n", gameField);
+        };
 
     }
 }
