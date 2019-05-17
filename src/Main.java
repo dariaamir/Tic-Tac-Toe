@@ -67,32 +67,60 @@ public class Main {
         }
     }
 
-    private static boolean checkInput(String inp){
+    private static boolean checkInput(String inp, String [] gameField){
         boolean result = true;
         int c1 = 0;
         int c2 = 0;
 
         // not numbers
         try {
-            c1 = Integer.parseInt(inp.split("")[0]);
-            c2 = Integer.parseInt(inp.split("")[0]);
+            String[] a = inp.split(" ");
+            c1 = Integer.parseInt(a[0]);
+            c2 = Integer.parseInt(a[1]);
+
+            int intCoordinates = inputToCoordinates(inp);
 
         // out of range
             if ((c1 < 1) || (c1 > 3) || (c2 < 1) || (c2 > 3)){
                 result = false;
                 System.out.println("Coordinates should be from 1 to 3!");
             }
+
+        // cell is occupied
+            else if (! gameField[intCoordinates].equals(" ")){
+                result = false;
+                System.out.println("This cell is occupied! Choose another one!");
+            }
         }
         catch (NumberFormatException e) {
             result = false;
             System.out.println("You should enter numbers!");
         }
-
-
-
-
-
         return result;
+    }
+    public static int inputToCoordinates(String s) {
+        switch (s) {
+            case "1 3":
+                return 0;
+            case "2 3":
+                return 1;
+            case "3 3":
+                return 2;
+            case "1 2":
+                return 3;
+            case "2 2":
+                return 4;
+            case "3 2":
+                return 5;
+            case "1 1":
+                return 6;
+            case "2 1":
+                return 7;
+            case "3 1":
+                return 8;
+            default:
+                return -1;
+        }
     }
 
     public static void main(String[] args) {
@@ -111,50 +139,28 @@ public class Main {
         //checkWinner(a);
 
         System.out.println("Enter the coordinates: ");
-        String coordinates = sc.nextLine();
+        String stringCoordinates = sc.nextLine();
+        while (true){
+            if (checkInput(stringCoordinates, gameField)){
+                gameField[inputToCoordinates(stringCoordinates)] = "X";
+                break;
+            }
+            else {
+                System.out.println("Enter the coordinates: ");
+                stringCoordinates = sc.nextLine();
+            }
+        }
+
 
         // 1.3 2.3 3.3
         // 1.2 2.2 3.2
         // 1.1 2.1 3.1
 
-        if (checkInput(coordinates)){
-            switch (coordinates){
-                case "1 3":
-                    gameField[0] = "X";
-                    break;
-                case "2 3":
-                    gameField[1] = "X";
-                    break;
-                case "3 3":
-                    gameField[2] = "X";
-                    break;
-                case "1 2":
-                    gameField[3] = "X";
-                    break;
-                case "2 2":
-                    gameField[4] = "X";
-                    break;
-                case "3 2":
-                    gameField[5] = "X";
-                    break;
-                case "1 1":
-                    gameField[6] = "X";
-                    break;
-                case "2 1":
-                    gameField[7] = "X";
-                    break;
-                case "3 1":
-                    gameField[8] = "X";
-                    break;
-            }
-
-            System.out.format(
-                    "---------\n" +
-                            "| %s %s %s |\n" +
-                            "| %s %s %s |\n" +
-                            "| %s %s %s |\n" +
-                            "---------\n", gameField);
-        };
-
+        System.out.format(
+                "---------\n" +
+                        "| %s %s %s |\n" +
+                        "| %s %s %s |\n" +
+                        "| %s %s %s |\n" +
+                        "---------\n", gameField);
     }
 }
