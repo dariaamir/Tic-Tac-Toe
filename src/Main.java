@@ -17,56 +17,6 @@ public class Main {
         else {return false;}
     }
 
-    private static boolean checkEmpty(String[] a){
-        boolean res = false;
-        for (String element : a) {
-            if (element.equals(" ")) {
-                res = true;
-                break;
-            }
-        }
-        return  res;
-    }
-
-    private static boolean countImpossibleDifference(String[] a){
-        int countX = 0;
-        int countO = 0;
-        for (String el: a){
-            if (el.equals("X")){countX ++;}
-            else if (el.equals("O")){countO ++;}
-        }
-
-        if (Math.abs(countO - countX) > 1){return true;}
-        else {return false;}
-
-    }
-
-    private static void checkWinner(String[] a){
-        boolean xwins = checkIfWins("X", a);
-        boolean owins = checkIfWins("O", a);
-        boolean empty = checkEmpty(a);
-        boolean impossibleDiff = countImpossibleDifference(a);
-
-        if (impossibleDiff) {
-            System.out.println("Impossible");
-        }
-        else if (!xwins && !owins && empty){
-            System.out.println("Game not finished");
-        }
-        else if (!xwins && !owins && !empty){
-            System.out.println("Draw");
-        }
-        else if (xwins && !owins){
-            System.out.println("X wins");
-        }
-        else if (!xwins && owins){
-            System.out.println("O wins");
-        }
-        else if (xwins && owins){
-            System.out.println("Impossible");
-        }
-    }
-
     private static boolean checkInput(String inp, String [] gameField){
         boolean result = true;
         int c1 = 0;
@@ -98,6 +48,7 @@ public class Main {
         }
         return result;
     }
+
     public static int inputToCoordinates(String s) {
         switch (s) {
             case "1 3":
@@ -123,21 +74,7 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println("Enter cells: ");
-        Scanner sc = new Scanner(System.in);
-        String userInput = sc.nextLine().replace("\"", "");
-        String[] gameField = userInput.split("");
-
-
-        System.out.format(
-                "---------\n" +
-                        "| %s %s %s |\n" +
-                        "| %s %s %s |\n" +
-                        "| %s %s %s |\n" +
-                        "---------\n", gameField);
-        //checkWinner(a);
-
+    public static String[] userMove(Scanner sc, String[] gameField){
         System.out.println("Enter the coordinates: ");
         String stringCoordinates = sc.nextLine();
         while (true){
@@ -150,12 +87,23 @@ public class Main {
                 stringCoordinates = sc.nextLine();
             }
         }
+        return gameField;
+    }
 
+    public static String[] easyComputerMove(String[] gameField){
+        System.out.println("Making move level \"easy\"");
+        Random r = new Random();
+        while (true){
+            int t = r.nextInt(9);
+            if (gameField[t].equals(" ")){
+                gameField[t] = "O";
+                break;
+            }
+        }
+        return gameField;
+    }
 
-        // 1.3 2.3 3.3
-        // 1.2 2.2 3.2
-        // 1.1 2.1 3.1
-
+    public static void printGameField (String[] gameField){
         System.out.format(
                 "---------\n" +
                         "| %s %s %s |\n" +
@@ -163,4 +111,57 @@ public class Main {
                         "| %s %s %s |\n" +
                         "---------\n", gameField);
     }
+
+    public static void readCommand(String command, Scanner sc){
+        String[] commandArray = command.split(" ");
+        if ((commandArray.length == 3) &&
+                (commandArray[0].equals("start") &&
+                        ((commandArray[1].equals("easy")) || (commandArray[1].equals("user"))) &&
+                            ((commandArray[2].equals("easy")) || (commandArray[2].equals("user"))))) {
+            startGame(sc, commandArray[1], commandArray[2]);
+
+        }
+        else {
+            System.out.println("Bad parameters!");
+        }
+    }
+
+    public static void startGame(Scanner sc, String user1, String user2){
+        String[] gameField = {" ", " ", " ", " ", " ", " ", " ", " ", " "};
+        printGameField(gameField);
+
+        while (true) {
+            userMove(sc, gameField);
+            printGameField(gameField);
+            if (checkIfWins("X", gameField)) {
+                System.out.println("X wins");
+                break;
+            }
+            easyComputerMove(gameField);
+            printGameField(gameField);
+            if (checkIfWins("O", gameField)) {
+                System.out.println("O wins");
+                break;
+            }
+        }
+
+    }
+
+
+    public static void main(String[] args) {
+
+        System.out.print("Input command: ");
+        Scanner sc = new Scanner(System.in);
+        String command = sc.nextLine();
+        while (! command.equals("exit")){
+            readCommand(command, sc);
+            System.out.print("Input command: ");
+            command = sc.nextLine();
+        }
+    }
+
+
+        // 1.3 2.3 3.3
+        // 1.2 2.2 3.2
+        // 1.1 2.1 3.1
 }
