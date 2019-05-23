@@ -2,15 +2,15 @@ import java.util.*;
 
 public class Main {
 
-    private static boolean checkIfWins(String l, String[] a){
-        if (((a[0].endsWith(l)) && (a[1].endsWith(l)) && (a[2].endsWith(l)))||
-                ((a[3].endsWith(l)) && (a[4].endsWith(l)) && (a[5].endsWith(l)))||
-                ((a[6].endsWith(l)) && (a[7].endsWith(l)) && (a[8].endsWith(l)))||
-                ((a[0].endsWith(l)) && (a[3].endsWith(l)) && (a[6].endsWith(l)))||
-                ((a[1].endsWith(l)) && (a[4].endsWith(l)) && (a[7].endsWith(l)))||
-                ((a[2].endsWith(l)) && (a[5].endsWith(l)) && (a[8].endsWith(l)))||
-                ((a[0].endsWith(l)) && (a[4].endsWith(l)) && (a[8].endsWith(l)))||
-                ((a[2].endsWith(l)) && (a[4].endsWith(l)) && (a[6].endsWith(l)))
+    private static boolean checkIfWins(String sign, String[] gameField){
+        if (((gameField[0].endsWith(sign)) && (gameField[1].endsWith(sign)) && (gameField[2].endsWith(sign)))||
+                ((gameField[3].endsWith(sign)) && (gameField[4].endsWith(sign)) && (gameField[5].endsWith(sign)))||
+                ((gameField[6].endsWith(sign)) && (gameField[7].endsWith(sign)) && (gameField[8].endsWith(sign)))||
+                ((gameField[0].endsWith(sign)) && (gameField[3].endsWith(sign)) && (gameField[6].endsWith(sign)))||
+                ((gameField[1].endsWith(sign)) && (gameField[4].endsWith(sign)) && (gameField[7].endsWith(sign)))||
+                ((gameField[2].endsWith(sign)) && (gameField[5].endsWith(sign)) && (gameField[8].endsWith(sign)))||
+                ((gameField[0].endsWith(sign)) && (gameField[4].endsWith(sign)) && (gameField[8].endsWith(sign)))||
+                ((gameField[2].endsWith(sign)) && (gameField[4].endsWith(sign)) && (gameField[6].endsWith(sign)))
         ){
             return true;
         }
@@ -74,34 +74,101 @@ public class Main {
         }
     }
 
-    public static String[] userMove(Scanner sc, String[] gameField){
+    public static void userMove(Scanner sc, String[] gameField, String sign){
         System.out.println("Enter the coordinates: ");
         String stringCoordinates = sc.nextLine();
         while (true){
             if (checkInput(stringCoordinates, gameField)){
-                gameField[inputToCoordinates(stringCoordinates)] = "X";
+                gameField[inputToCoordinates(stringCoordinates)] = sign;
                 break;
             }
             else {
                 System.out.println("Enter the coordinates: ");
-                stringCoordinates = sc.nextLine();
+                if (sc.hasNextLine()){
+                    stringCoordinates = sc.nextLine();
+                }
             }
         }
-        return gameField;
     }
 
-    public static String[] easyComputerMove(String[] gameField){
+    public static void easyComputerMove(String[] gameField, String sign){
         System.out.println("Making move level \"easy\"");
+        moveRandom(gameField, sign);
+
+    }
+
+    public static void mediumComputerMove(String[] gameField, String sign, String opponentSign){
+        System.out.println("Making move level \"medium\"");
+        // if is can win in 1 move
+        if (! moveToWinInOneMove(gameField, sign)){
+            if (! moveToPreventOtherWin(gameField, sign, opponentSign)) {
+                moveRandom(gameField, sign);
+            }
+        }
+    }
+
+    public static void moveRandom(String[] gameField, String sign){
         Random r = new Random();
         while (true){
             int t = r.nextInt(9);
             if (gameField[t].equals(" ")){
-                gameField[t] = "O";
+                gameField[t] = sign;
                 break;
             }
         }
-        return gameField;
     }
+
+    public static boolean moveToWinInOneMove(String[] gameField, String sign){
+        boolean flag = false;
+        for (String el : gameField){
+            if (el.equals(" ")){
+                el = sign;
+                if (checkIfWins(sign, gameField)){
+                    flag = true;
+                    break;
+                }
+                else {
+                    el = " ";
+                }
+            }
+        }
+        return flag;
+    }
+
+    public static boolean moveToPreventOtherWin(String[] gameField, String sign, String opponentSign){
+        boolean flag = false;
+        for (String el : gameField){
+            if (el.equals(" ")){
+                el = opponentSign;
+                if (checkIfWins(opponentSign, gameField)){
+                    el = sign;
+                    flag = true;
+                    break;
+                }
+                else {
+                    el = " ";
+                }
+            }
+        }
+        return flag;
+    }
+
+
+    public static void gamerMove(String[] gameField, String user_type, String sign, String opponentSign, Scanner sc){
+        switch (user_type) {
+            case "user":
+                userMove(sc, gameField, sign);
+                break;
+            case "easy":
+                easyComputerMove(gameField, sign);
+                break;
+            case "medium":
+                mediumComputerMove(gameField, sign, opponentSign);
+                break;
+        }
+    }
+
+
 
     public static void printGameField (String[] gameField){
         System.out.format(
@@ -116,8 +183,8 @@ public class Main {
         String[] commandArray = command.split(" ");
         if ((commandArray.length == 3) &&
                 (commandArray[0].equals("start") &&
-                        ((commandArray[1].equals("easy")) || (commandArray[1].equals("user"))) &&
-                            ((commandArray[2].equals("easy")) || (commandArray[2].equals("user"))))) {
+                        ((commandArray[1].equals("easy")) || (commandArray[1].equals("user")) || (commandArray[1].equals("medium"))) &&
+                            ((commandArray[2].equals("easy")) || (commandArray[2].equals("user")) || (commandArray[2].equals("medium"))))) {
             startGame(sc, commandArray[1], commandArray[2]);
 
         }
@@ -131,20 +198,19 @@ public class Main {
         printGameField(gameField);
 
         while (true) {
-            userMove(sc, gameField);
+            gamerMove(gameField, user1, "X", "O", sc);
             printGameField(gameField);
             if (checkIfWins("X", gameField)) {
                 System.out.println("X wins");
                 break;
             }
-            easyComputerMove(gameField);
+            gamerMove(gameField, user2, "O", "X", sc);
             printGameField(gameField);
             if (checkIfWins("O", gameField)) {
                 System.out.println("O wins");
                 break;
             }
         }
-
     }
 
 
