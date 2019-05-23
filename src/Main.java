@@ -120,15 +120,15 @@ public class Main {
 
     public static boolean moveToWinInOneMove(String[] gameField, String sign){
         boolean flag = false;
-        for (String el : gameField){
-            if (el.equals(" ")){
-                el = sign;
+        for (int i = 0; i < 9; i ++){
+            if (gameField[i].equals(" ")){
+                gameField[i] = sign;
                 if (checkIfWins(sign, gameField)){
                     flag = true;
                     break;
                 }
                 else {
-                    el = " ";
+                    gameField[i] = " ";
                 }
             }
         }
@@ -137,16 +137,16 @@ public class Main {
 
     public static boolean moveToPreventOtherWin(String[] gameField, String sign, String opponentSign){
         boolean flag = false;
-        for (String el : gameField){
-            if (el.equals(" ")){
-                el = opponentSign;
+        for (int i = 0; i < 9; i ++){
+            if (gameField[i].equals(" ")){
+                gameField[i] = opponentSign;
                 if (checkIfWins(opponentSign, gameField)){
-                    el = sign;
+                    gameField[i] = sign;
                     flag = true;
                     break;
                 }
                 else {
-                    el = " ";
+                    gameField[i] = " ";
                 }
             }
         }
